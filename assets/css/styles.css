@@ -1,0 +1,85 @@
+/* ==========================================================================
+   The Unoffendable Heart — shared styles
+   Section 1: base rules extracted verbatim from the design export
+   Section 2: hover states (were `style-hover` attributes in the export)
+   Section 3: additions for the JS-rendered quiz + accessibility
+   Fonts are declared in fonts.css.
+   ========================================================================== */
+
+/* ============================ 1. BASE (from export) ====================== */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #171C10; }
+::selection { background: #C2A064; color: #F0EEE5; }
+.uh-root { font-family: 'Lora', serif; -webkit-font-smoothing: antialiased; color: #23281A; }
+.uh-root input::placeholder { color: rgba(240,238,229,0.4); }
+image-slot { display:block !important; width:100% !important; height:100% !important; }
+a { color: #C2A064; }
+a:hover { color: #D8BE86; }
+.uh-grain::before { content:""; position:absolute; inset:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"); opacity:0.06; mix-blend-mode:overlay; }
+@keyframes uhFade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+.uh-anim { animation: uhFade .45s ease both; }
+@media (max-width: 900px){
+  .uh-hero-grid{ grid-template-columns:1fr !important; gap:44px !important; }
+  .uh-two-col{ grid-template-columns:1fr !important; gap:44px !important; }
+  .uh-cards-3{ grid-template-columns:1fr !important; }
+  .uh-cards-4{ grid-template-columns:1fr 1fr !important; }
+  .uh-nav-links{ display:none !important; }
+  .uh-h1{ font-size:40px !important; }
+  .uh-h2{ font-size:32px !important; }
+  .uh-section{ padding:76px 0 !important; }
+}
+@media (max-width: 560px){ .uh-cards-4{ grid-template-columns:1fr !important; } }
+@media (min-width: 901px){ .uh-sticky{ display:none !important; } }
+
+/* ======================= 2. HOVER STATES (from export) =================== */
+[data-h="1"]:hover{ color:#fff !important; }
+[data-h="2"]:hover{ color:#C2A064 !important; }
+[data-h="3"]:hover{ background:#D8BE86 !important; }
+[data-h="4"]:hover{ background:#D8BE86 !important; transform:translateY(-1px) !important; }
+[data-h="5"]:hover{ background:#F0EEE5 !important; color:#23281A !important; border-color:#F0EEE5 !important; }
+[data-h="6"]:hover{ color:#F0EEE5 !important; }
+[data-h="7"]:hover{ color:rgba(35,40,26,0.8) !important; }
+
+/* ================= 3. QUIZ OVERLAY + FORM + A11Y ADDITIONS =============== */
+.uh-overlay-hidden { display:none !important; }
+
+/* email form fields */
+.uh-field { display:block; }
+.uh-input {
+  width:100%; background:#1C2214; border:1px solid rgba(240,238,229,0.18);
+  border-radius:12px; padding:16px 20px; font-family:'Newsreader',serif;
+  font-size:16px; color:#F0EEE5; outline:none;
+}
+.uh-input::placeholder { color: rgba(240,238,229,0.4); }
+.uh-input:focus { border-color:#C2A064 !important; }
+
+/* Location <select>: dim the placeholder while unselected, and give the open
+   option list a light background so the items stay readable. */
+#uh-location:invalid { color: rgba(240,238,229,0.4); }
+#uh-location option { background-color:#F5F2E9; color:#23281A; }
+#uh-location option[value=""] { color: rgba(35,40,26,0.55); }
+
+/* JS-rendered hover states (were style-hover in the design's quiz views) */
+.uh-opt:hover { border-color:#C2A064 !important; background:#202716 !important; transform:translateX(3px) !important; }
+.uh-h-gold:hover { background:#D8BE86 !important; transform:translateY(-1px) !important; }
+.uh-h-outline:hover { background:#F0EEE5 !important; color:#23281A !important; border-color:#F0EEE5 !important; }
+.uh-h-linkmuted:hover { color:#C2A064 !important; }
+.uh-back:hover { color:#C2A064 !important; }
+
+/* screen-reader-only label text */
+.uh-sr-only {
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+/* visible keyboard focus (design removed default outlines) */
+:focus-visible { outline:2px solid #C2A064; outline-offset:2px; border-radius:2px; }
+.uh-input:focus-visible { outline:none; } /* border colour already signals focus */
+
+/* respect reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  html { scroll-behavior:auto; }
+  .uh-anim { animation:none; }
+  * { transition:none !important; }
+}

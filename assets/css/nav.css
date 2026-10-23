@@ -1,0 +1,86 @@
+/* ==========================================================================
+   Shared mobile navigation (hamburger menu)
+   The design hides the section links on screens <=900px with no mobile menu.
+   This adds a hamburger toggle + dropdown so those links stay reachable on
+   phones/tablets. Loaded on both landing pages, alongside their own CSS.
+   ========================================================================== */
+
+/* hamburger button — hidden on desktop, shown where the inline links are hidden */
+.uh-burger{
+  display:none; align-items:center; justify-content:center;
+  background:none; border:none; cursor:pointer; color:#F0EEE5;
+  padding:8px; margin:-8px -6px -8px 0;
+}
+.uh-burger .uh-burger-x{ display:none; }
+.uh-burger[aria-expanded="true"] .uh-burger-bars{ display:none; }
+.uh-burger[aria-expanded="true"] .uh-burger-x{ display:block; }
+
+/* dropdown panel, anchored just below the sticky nav bar */
+.uh-mobile-menu{
+  position:absolute; top:100%; left:0; right:0;
+  display:none; flex-direction:column;
+  background:rgba(16,13,9,0.98);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(240,238,229,0.14);
+  padding:6px 24px 18px; z-index:41;
+}
+.uh-mobile-menu.is-open{ display:flex; }
+.uh-mobile-menu a{
+  font-family:'Saira SemiCondensed',sans-serif; font-weight:600; font-size:14px;
+  letter-spacing:0.08em; text-transform:uppercase; color:rgba(240,238,229,0.82);
+  text-decoration:none; padding:14px 2px;
+  border-bottom:1px solid rgba(240,238,229,0.08);
+}
+.uh-mobile-menu a:last-child{ border-bottom:none; }
+.uh-mobile-menu a:hover,
+.uh-mobile-menu a:focus-visible{ color:#C2A064; }
+
+@media (min-width:901px){ .uh-mobile-menu{ display:none !important; } }
+
+/* Below 900px the inline links collapse into the hamburger. The row becomes
+   logo + CTA + burger, so tighten spacing and keep the CTA on one line. */
+@media (max-width:900px){
+  .uh-burger{ display:inline-flex; }
+  nav > div{ padding-left:16px !important; padding-right:16px !important; gap:12px !important; }
+  nav > div > a:first-child span{ font-size:18px !important; }   /* logo */
+  .uh-nav-cta{ white-space:nowrap; }
+}
+
+/* On phones, shrink the logo a touch and the CTA label to 8px (per request)
+   so logo + CTA + burger fit comfortably without the CTA wrapping. */
+@media (max-width:440px){
+  nav > div{ padding-left:14px !important; padding-right:14px !important; gap:10px !important; }
+  nav > div > a:first-child span{ font-size:16px !important; }
+  .uh-nav-cta{ font-size:8px !important; padding-left:12px !important; padding-right:12px !important; }
+}
+
+/* The fixed sticky CTA bar (<=900px) covers the bottom ~70px of the viewport.
+   Add clearance below the footer so the copyright / legal row isn't hidden
+   behind it. */
+@media (max-width:900px){
+  footer{ padding-bottom:72px !important; }
+}
+
+/* ---- Form validation (shared by both forms) --------------------------- */
+.uh-field-error{
+  display:block;
+  font-family:'Newsreader',serif;
+  font-size:13.5px; line-height:1.35;
+  color:#E8938B;                 /* soft red, readable on the dark fields */
+  margin:6px 2px 0;
+}
+.uh-invalid{
+  border-color:#E8938B !important;
+  box-shadow:0 0 0 1px rgba(232,147,139,0.35);
+}
+
+/* Long pill CTAs (e.g. "Take the Free Assessment Now →", "Pre-Order for
+   Exclusive Content →") wrap the trailing arrow onto its own line on phones
+   because of the 40px side padding + 16-17px font. Trim padding/font and keep
+   the label on one line so the arrow stays attached. Shared by both pages. */
+@media (max-width: 560px){
+  .uh-cta-fit{ white-space:nowrap; font-size:13px !important; padding-left:22px !important; padding-right:22px !important; }
+}
+@media (max-width: 360px){
+  .uh-cta-fit{ font-size:12px !important; padding-left:16px !important; padding-right:16px !important; }
+}

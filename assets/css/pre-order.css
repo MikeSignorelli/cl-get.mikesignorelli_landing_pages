@@ -1,0 +1,87 @@
+/* ==========================================================================
+   The Unoffendable Heart — Pre-Order page styles
+   Section 1: base rules extracted verbatim from the design export
+   Section 2: hover/focus states (were style-hover / style-focus in the export)
+   Section 3: additions (form success toggle, a11y, responsive retailer grid)
+   Fonts are declared in the shared fonts.css.
+   ========================================================================== */
+
+/* ============================ 1. BASE (from export) ====================== */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #171C10; }
+::selection { background: #C2A064; color: #F0EEE5; }
+.uh-root { font-family: 'Newsreader', serif; -webkit-font-smoothing: antialiased; color: #23281A; }
+.uh-root input::placeholder, .uh-root select:invalid { color: rgba(240,238,229,0.4); }
+image-slot { display:block !important; width:100% !important; height:100% !important; }
+a { color: #C2A064; }
+a:hover { color: #D8BE86; }
+.uh-grain::before { content:""; position:absolute; inset:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"); opacity:0.06; mix-blend-mode:overlay; }
+@keyframes uhFade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+.uh-anim { animation: uhFade .45s ease both; }
+@media (max-width: 900px){
+  .uh-hero-grid{ grid-template-columns:1fr !important; gap:44px !important; text-align:center; }
+  .uh-hero-grid .uh-hero-copy{ align-items:center; }
+  .uh-two-col{ grid-template-columns:1fr !important; gap:44px !important; }
+  .uh-cards-3{ grid-template-columns:1fr !important; }
+  .uh-nav-links{ display:none !important; }
+  .uh-h1{ font-size:44px !important; }
+  .uh-h2{ font-size:32px !important; }
+  .uh-section{ padding:76px 0 !important; }
+  .uh-book-hero{ width:230px !important; }
+}
+@media (min-width: 901px){ .uh-sticky{ display:none !important; } }
+
+/* ==================== 2. HOVER / FOCUS STATES (from export) ============== */
+[data-h="1"]:hover{ color:#fff !important; }
+[data-h="2"]:hover{ color:#C2A064 !important; }
+[data-h="3"]:hover{ background:#D8BE86 !important; }
+[data-h="4"]:hover{ background:#D8BE86 !important; transform:translateY(-1px) !important; }
+[data-h="5"]:hover{ transform:translateY(-3px) !important; border-color:#C2A064 !important; box-shadow:0 16px 30px -18px rgba(0,0,0,0.4) !important; }
+[data-h="6"]:hover{ background:#F0EEE5 !important; color:#23281A !important; border-color:#F0EEE5 !important; }
+[data-h="7"]:hover{ color:#F0EEE5 !important; }
+[data-f="1"]:focus{ border-color:#C2A064 !important; }
+
+/* ==================== 3. ADDITIONS (form toggle + a11y) ================= */
+.uh-hidden { display:none !important; }
+
+/* the retailer <select> shows its chosen value in light text on the dark field;
+   the OPEN option list needs a light background so the items stay readable
+   (otherwise it's dark text on the field's dark background = invisible). */
+#uh-retailer { color:#F0EEE5; }
+#uh-retailer:invalid { color: rgba(240,238,229,0.4); }
+#uh-retailer option { background-color:#F5F2E9; color:#23281A; }
+#uh-retailer option[value=""] { color: rgba(35,40,26,0.55); }
+
+/* form validation error line */
+.uh-form-error { font-family:'Newsreader',serif; font-size:14px; color:#E8A0A0; margin:2px 0 0; }
+
+/* Where-to-buy grid: the design keeps 5 columns; wrap it so it never
+   overflows on tablet/mobile. */
+@media (max-width: 900px){ .uh-retailers{ grid-template-columns:repeat(3,1fr) !important; } }
+@media (max-width: 560px){ .uh-retailers{ grid-template-columns:repeat(2,1fr) !important; } }
+
+/* Center the hero call-to-action row on mobile (the hero copy is centered
+   under 900px; the button row was stretching full-width and left-aligning). */
+@media (max-width: 900px){
+  .uh-hero-cta{ justify-content:center !important; }
+}
+
+/* Sticky mobile CTA bar: tighten padding/gap and let the label shrink so its
+   content never spills past the viewport. (Nav sizing lives in nav.css.) */
+@media (max-width: 480px){
+  .uh-sticky{ padding-left:14px !important; padding-right:14px !important; gap:10px !important; }
+  .uh-sticky > span{ min-width:0; }
+  .uh-sticky > a{ flex-shrink:0; }
+}
+
+/* visible keyboard focus (design removed default outlines) */
+:focus-visible { outline:2px solid #C2A064; outline-offset:2px; border-radius:2px; }
+input:focus-visible, select:focus-visible { outline:none; } /* border colour signals focus */
+
+/* respect reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  html { scroll-behavior:auto; }
+  .uh-anim { animation:none; }
+  * { transition:none !important; }
+}

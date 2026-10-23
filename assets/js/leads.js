@@ -31,7 +31,7 @@
   // One Zapier Catch Hook URL per form. Blank = that form does not post.
   var HOOKS = {
     'offense-vulnerability-quiz':        'https://hooks.zapier.com/hooks/catch/29186855/41lv7ll/',
-    'unoffendable-heart-preorder-bonus': 'https://hooks.zapier.com/hooks/catch/1556442/447odu1/'
+    'unoffendable-heart-preorder-bonus': 'https://hooks.zapier.com/hooks/catch/29186855/41glv8k/'
   };
 
   // Human-readable UTC timestamp, e.g. "Jul 27, 2026, 10:28 PM UTC".

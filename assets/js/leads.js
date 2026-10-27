@@ -1,18 +1,19 @@
 /* ==========================================================================
-   Lead delivery → Zapier "Catch Hook"  (shared by both landing-page forms)
+   Lead delivery → /api/lead → Zapier "Catch Hook"  (shared by both forms)
    --------------------------------------------------------------------------
-   Each form has its OWN webhook, keyed by its `source` in the HOOKS map below.
-   Leave a source's URL blank to disable delivery for that form (safe no-op) —
+   The browser used to POST straight to hooks.zapier.com. Ad blockers and
+   privacy extensions commonly blocklist that domain, so the request would
+   be silently dropped (fire-and-forget + no-cors swallows the failure)
+   while the form still showed success. We now POST same-origin to
+   /api/lead (see that file), which relays to Zapier server-side — nothing
+   in the browser talks to zapier.com, so domain-based blockers can't
+   interfere. The actual webhook URLs now live only in api/lead.js.
+
+   Each form has its OWN webhook, keyed by its `source`. A source with no
+   matching entry in api/lead.js's HOOKS map is a safe no-op server-side —
    this keeps each Zap's data clean (e.g. the quiz Sheet only gets quiz leads).
 
-   SETUP (per form, in Zapier):
-     1. Create a Zap. Trigger app: "Webhooks by Zapier".
-     2. Trigger event: "Catch Hook"  (NOT "Catch Raw Hook").
-     3. Leave "Pick off a Child Key" BLANK — our payload is flat.
-     4. Copy the webhook URL and paste it next to the matching source below.
-     5. Build the action (Google Sheet, Mailchimp, …) and map the fields.
-
-   Fields sent (application/x-www-form-urlencoded so Zapier maps each on its own):
+   Fields sent:
      • source, page (path)                                    — on every submission
      • timestamp  (ISO 8601, machine-readable)                 — on every submission
      • submittedOn (human-readable UTC, e.g. "Jul 27, 2026, 10:28 PM UTC" — map
@@ -22,17 +23,14 @@
         string like "20 of 28")
      • bonus (source "unoffendable-heart-preorder-bonus"): firstName, lastName, email, retailer, orderNo
 
-   mode:"no-cors" + fire-and-forget: Zapier's hook returns no CORS headers, and
-   we never read the response or block the form flow.
+   Fire-and-forget: we never block the form flow on the relay's response.
    ========================================================================== */
 (function () {
   'use strict';
 
-  // One Zapier Catch Hook URL per form. Blank = that form does not post.
-  var HOOKS = {
-    'offense-vulnerability-quiz':        'https://hooks.zapier.com/hooks/catch/29186855/41lv7ll/',
-    'unoffendable-heart-preorder-bonus': 'https://hooks.zapier.com/hooks/catch/29186855/41glv8k/'
-  };
+  // Sources this page is allowed to post. Keep in sync with api/lead.js's
+  // HOOKS map — this list only gates the client-side no-op check below.
+  var SOURCES = ['offense-vulnerability-quiz', 'unoffendable-heart-preorder-bonus'];
 
   // Human-readable UTC timestamp, e.g. "Jul 27, 2026, 10:28 PM UTC".
   // Sent alongside the ISO `timestamp` so the sheet shows a real date instead
@@ -51,24 +49,24 @@
   }
 
   function post(source, data) {
-    var url = HOOKS[source];
-    if (!url) return false; // no hook configured for this form — no-op
+    if (SOURCES.indexOf(source) === -1) return false; // not a known form — no-op
     try {
       var now = new Date();
-      var body = new URLSearchParams();
-      body.set('source', source);
-      body.set('timestamp', now.toISOString());      // machine-readable ISO 8601
-      body.set('submittedOn', readableUTC(now));     // human-readable, e.g. "Jul 27, 2026, 10:28 PM UTC"
-      body.set('page', location.pathname);
+      var payload = {
+        source: source,
+        timestamp: now.toISOString(),      // machine-readable ISO 8601
+        submittedOn: readableUTC(now),     // human-readable, e.g. "Jul 27, 2026, 10:28 PM UTC"
+        page: location.pathname
+      };
       if (data) {
         Object.keys(data).forEach(function (k) {
-          if (data[k] != null) body.set(k, String(data[k]));
+          if (data[k] != null) payload[k] = String(data[k]);
         });
       }
-      fetch(url, {
+      fetch('/api/lead', {
         method: 'POST',
-        mode: 'no-cors',   // Zapier hook sends no CORS headers; we don't read the response
-        body: body,        // URLSearchParams → application/x-www-form-urlencoded (Zapier parses fields)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
         keepalive: true    // still delivers if the page is navigating away
       }).catch(function () { /* silent: never block the form flow */ });
       return true;
@@ -80,9 +78,7 @@
   window.UHLead = {
     post: post,
     configured: function (source) {
-      return source
-        ? !!HOOKS[source]
-        : Object.keys(HOOKS).some(function (s) { return !!HOOKS[s]; });
+      return source ? SOURCES.indexOf(source) !== -1 : SOURCES.length > 0;
     }
   };
 })();
